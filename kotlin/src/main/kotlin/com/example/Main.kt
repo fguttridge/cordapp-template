@@ -24,9 +24,11 @@ fun main(args: Array<String>) {
     val user = User("user1", "test", permissions = setOf())
     driver(dsl = {
         startNode("Controller", setOf(ServiceInfo(ValidatingNotaryService.type)))
-        startNode("NodeA", rpcUsers = listOf(user))
-        startNode("NodeB", rpcUsers = listOf(user))
-        startNode("NodeC", rpcUsers = listOf(user))
+        startNode("TD", rpcUsers = listOf(user))
+        startNode("BMO", rpcUsers = listOf(user))
+        startNode("HSBC", rpcUsers = listOf(user))
+        startNode("AMRO", rpcUsers = listOf(user))
+        startNode("Scotia", rpcUsers = listOf(user))
         waitForAllNodesToFinish()
     }, isDebug = true)
 }

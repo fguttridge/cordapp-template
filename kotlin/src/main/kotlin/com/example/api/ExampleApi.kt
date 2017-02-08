@@ -18,6 +18,13 @@ val NOTARY_NAME = "Controller"
 class ExampleApi(val services: CordaRPCOps) {
     val myLegalName: String = services.nodeIdentity().legalIdentity.name
 
+
+    @GET
+    @Path("test")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun test(): Response {
+        return Response.accepted().build()
+    }
     /**
      * Returns the party name of the node providing this end-point.
      */
@@ -25,7 +32,6 @@ class ExampleApi(val services: CordaRPCOps) {
     @Path("me")
     @Produces(MediaType.APPLICATION_JSON)
     fun whoami() = mapOf("me" to myLegalName)
-
     /**
      * Returns all parties registered with the [NetworkMapService], the names can be used to look-up identities
      * by using the [IdentityService].
