@@ -3,8 +3,13 @@ package com.example.api
 import com.example.contract.PurchaseOrderContract
 import com.example.contract.PurchaseOrderState
 import com.example.flow.ExampleFlow.Initiator
+import com.example.flow.IssueDDRFlow.Issue
+import com.example.flow.IssueDDRFlowResult
 import com.example.flow.ExampleFlowResult
 import com.example.model.PurchaseOrder
+import com.example.model.Value
+import net.corda.core.contracts.Amount
+import net.corda.core.contracts.currency
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.startFlow
 import javax.ws.rs.*
@@ -14,9 +19,37 @@ import javax.ws.rs.core.Response
 val NOTARY_NAME = "Controller"
 
 // This API is accessible from /api/example. All paths specified below are relative to it.
-@Path("example")
+@Path("jasper")
 class ExampleApi(val services: CordaRPCOps) {
     val myLegalName: String = services.nodeIdentity().legalIdentity.name
+
+    @PUT
+    @Path("{party}/issue-cash")
+    fun issueCash(@PathParam("party") receivingParty: String, value: Value) : Response{
+
+        val issueAmount = Amount(value.value, currency("CAD"))
+        val otherParty = services.partyFromName(receivingParty)
+        if (otherParty == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build()
+        }
+        val result: IssueDDRFlowResult = services
+                .startFlow(::Issue, issueAmount, otherParty)
+                .returnValue
+                .toBlocking()
+                .first()
+        when (result) {
+            is IssueDDRFlowResult.Success ->
+                return Response
+                        .status(Response.Status.CREATED)
+                        .entity(result.message)
+                        .build()
+            is IssueDDRFlowResult.Failure ->
+                return Response
+                        .status(Response.Status.BAD_REQUEST)
+                        .entity(result.message)
+                        .build()
+        }
+    }
 
     /**
      * Returns the party name of the node providing this end-point.
@@ -34,8 +67,7 @@ class ExampleApi(val services: CordaRPCOps) {
     @Path("peers")
     @Produces(MediaType.APPLICATION_JSON)
     fun getPeers() = mapOf("peers" to services.networkMapUpdates().first
-            .map { it.legalIdentity.name }
-            .filter { it != myLegalName && it != NOTARY_NAME })
+            .map { it.legalIdentity.name })
 
     /**
      * Displays all purchase order states that exist in the vault.
@@ -44,6 +76,16 @@ class ExampleApi(val services: CordaRPCOps) {
     @Path("purchase-orders")
     @Produces(MediaType.APPLICATION_JSON)
     fun getPurchaseOrders() = services.vaultAndUpdates().first
+
+    @GET
+    @Path("ViewTransactions")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun viewTransactions(){}
+
+    @PUT
+    @Path("{party}/lookup")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getUserFromName(@PathParam("party") partyName: String) = services.partyFromName(partyName).toString()
 
     /**
      * This should only be called from the 'buyer' node. It initiates a flow to agree a purchase order with a

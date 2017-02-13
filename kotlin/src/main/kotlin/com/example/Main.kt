@@ -5,6 +5,7 @@ import net.corda.node.driver.driver
 import net.corda.node.services.User
 import net.corda.node.services.transactions.ValidatingNotaryService
 
+
 /**
  * This file is exclusively for being able to run your nodes through an IDE (as opposed to running deployNodes)
  * Do not use in a production environment.
@@ -24,9 +25,10 @@ fun main(args: Array<String>) {
     val user = User("user1", "test", permissions = setOf())
     driver(dsl = {
         startNode("Controller", setOf(ServiceInfo(ValidatingNotaryService.type)))
-        startNode("NodeA", rpcUsers = listOf(user))
-        startNode("NodeB", rpcUsers = listOf(user))
-        startNode("NodeC", rpcUsers = listOf(user))
+        startNode("TD", rpcUsers = listOf(user))
+        startNode("BMO", rpcUsers = listOf(user))
+
         waitForAllNodesToFinish()
     }, isDebug = true)
+
 }

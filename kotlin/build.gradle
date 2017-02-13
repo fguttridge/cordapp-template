@@ -62,26 +62,16 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['build']) {
     node {
         name "Controller"
         dirName "controller"
-        nearestCity "London"
+        nearestCity "Toronto"
         advertisedServices = ["corda.notary.validating"]
         artemisPort 10002
         webPort 10003
         cordapps = []
     }
     node {
-        name "NodeA"
-        dirName "nodea"
-        nearestCity "London"
-        advertisedServices = []
-        artemisPort 10004
-        webPort 10005
-        cordapps = []
-        rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
-    }
-    node {
-        name "NodeB"
-        dirName "nodeb"
-        nearestCity "New York"
+        name "TD"
+        dirName "TD"
+        nearestCity "Toronto"
         advertisedServices = []
         artemisPort 10006
         webPort 10007
@@ -89,12 +79,12 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['build']) {
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }
     node {
-        name "NodeC"
-        dirName "nodec"
-        nearestCity "San Francisco"
+        name "BMO"
+        dirName "BMO"
+        nearestCity "Toronto"
         advertisedServices = []
-        artemisPort 10008
-        webPort 10009
+        artemisPort 10010
+        webPort 10011
         cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": []]]
     }

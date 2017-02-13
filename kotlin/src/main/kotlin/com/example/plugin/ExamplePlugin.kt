@@ -6,10 +6,13 @@ import com.example.contract.PurchaseOrderContract
 import com.example.contract.PurchaseOrderState
 import com.example.flow.ExampleFlow
 import com.example.flow.ExampleFlowResult
+import com.example.flow.IssueDDRFlowResult
+import com.example.flow.IssueDDRFlow
 import com.example.model.Address
 import com.example.model.Item
 import com.example.model.PurchaseOrder
 import com.example.service.ExampleService
+import net.corda.core.contracts.Amount
 import net.corda.core.crypto.Party
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.node.CordaPluginRegistry
@@ -36,7 +39,8 @@ class ExamplePlugin : CordaPluginRegistry() {
      * here, then the flow state machine will _not_ invoke the flow. Instead, an exception will be raised.
      */
     override val requiredFlows: Map<String, Set<String>> = mapOf(
-            ExampleFlow.Initiator::class.java.name to setOf(PurchaseOrderState::class.java.name, Party::class.java.name)
+            ExampleFlow.Initiator::class.java.name to setOf(PurchaseOrderState::class.java.name, Party::class.java.name),
+            IssueDDRFlow.Issue::class.java.name to setOf(Amount::class.java.name, Party::class.java.name)
     )
     /**
      * A list of long lived services to be hosted within the node. Typically you would use these to register flow
@@ -57,11 +61,15 @@ class ExamplePlugin : CordaPluginRegistry() {
         kryo.register(PurchaseOrderState::class.java)
         kryo.register(PurchaseOrderContract::class.java)
         kryo.register(PurchaseOrder::class.java)
+        kryo.register(Int::class.java)
+        kryo.register(Amount::class.java)
         kryo.register(Address::class.java)
         kryo.register(Date::class.java)
         kryo.register(Item::class.java)
         kryo.register(ExampleFlowResult.Success::class.java)
         kryo.register(ExampleFlowResult.Failure::class.java)
+        kryo.register(IssueDDRFlowResult.Success::class.java)
+        kryo.register(IssueDDRFlowResult.Failure::class.java)
         return true
     }
 }
